@@ -20,8 +20,14 @@ class InitCentersRandom(Initializer):
         self.X = X
 
     def __call__(self, shape, dtype=None):
+        print("--------------X is --------------\n",self.X)
+        print(self.X.shape[1])
+        print(shape[1])
         assert shape[1] == self.X.shape[1]
+        print(self.X.shape[0])
+        print(shape[0])
         idx = np.random.randint(self.X.shape[0], size=shape[0])
+        print(idx)
         return self.X[idx, :]
 
 
@@ -55,11 +61,14 @@ class RBFLayer(Layer):
         super(RBFLayer, self).__init__(**kwargs)
 
     def build(self, input_shape):
-
+        print("in build out dim ",self.output_dim," input shape ",input_shape[1])
+        print("input shape ", input_shape)
+        print("weight size should be (",self.output_dim,",", input_shape[1],")")
         self.centers = self.add_weight(name='centers',
-                                       shape=(self.output_dim, input_shape[1]),
+                                       shape=(self.output_dim, input_shape[-1]),
                                        initializer=self.initializer,
                                        trainable=True)
+        print("CENTERS ", self.centers)
         self.betas = self.add_weight(name='betas',
                                      shape=(self.output_dim,),
                                      initializer=Constant(value=self.init_betas),
@@ -69,17 +78,18 @@ class RBFLayer(Layer):
         super(RBFLayer, self).build(input_shape)
 
     def call(self, x):
-
+        """
         C = K.expand_dims(self.centers)
+        print("C is ",C)
         H = K.transpose(C - K.transpose(x))
         return K.exp(-self.betas * K.sum(H ** 2, axis=1))
+        """
+        C = self.centers[np.newaxis, :, :]
+        X = x[:, np.newaxis, :]
 
-        # C = self.centers[np.newaxis, :, :]
-        # X = x[:, np.newaxis, :]
-
-        # diffnorm = K.sum((C-X)**2, axis=-1)
-        # ret = K.exp( - self.betas * diffnorm)
-        # return ret
+        diffnorm = K.sum((C-X)**2, axis=-1)
+        ret = K.exp( - self.betas * diffnorm)
+        return ret
 
     def compute_output_shape(self, input_shape):
         return (input_shape[0], self.output_dim)
