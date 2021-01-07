@@ -252,7 +252,7 @@ regressor.summary()
 
 start_time = time.time()
 # Fitting the RBF to the Training set
-regressor.fit(X_train, y_train, batch_size=1, epochs=10, shuffle=False)
+regressor.fit(X_train, y_train, batch_size=1, epochs=5, shuffle=False)
 print("--- RBF Fit Complete in %s seconds ---" % (time.time() - start_time))
 print("\n")
 

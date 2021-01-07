@@ -115,12 +115,13 @@ op =tf.keras.optimizers.SGD(learning_rate=0.01)# for gradient cliping use parame
 
 # model
 model = Sequential()
-model.add(LSTM(50, input_shape=(1, look_back),dropout=0.0,recurrent_dropout=0.2))
+model.add(LSTM(200, input_shape=(1, look_back),dropout=0.0,recurrent_dropout=0.2))
+model.add(Dropout(.2))
 model.add(Dense(units=next_pred, kernel_initializer='uniform', activation='linear'))
 model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy'])#optimizer is 'adam' or op that has SGD(opt is worse)
 start_time = time.time()
 # Fitting the LSTM to the Training set
-history = model.fit(trainX, trainY, validation_data=(testX, testY),epochs=50, batch_size=1, verbose=2)
+history = model.fit(trainX, trainY, validation_data=(testX, testY),epochs=5, batch_size=1, verbose=2)
 model.summary()
 
 # evaluate the model
